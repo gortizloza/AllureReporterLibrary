@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Xml.Serialization;
 
-namespace AllureReporter
+namespace AllureReporterLibrary.Reporter
 {
     /// <summary>
     /// Handles operations to generate and save Allure reports
