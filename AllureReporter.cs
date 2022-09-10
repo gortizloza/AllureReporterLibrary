@@ -27,7 +27,7 @@ namespace AllureReporter
 
 
         /// <summary>
-        /// Calls external command "allure generate".
+        /// Call external command "allure generate".
         /// </summary>
         /// <remarks>The default report title is Allure Report</remarks>
         /// <param name="reportTitle">A custom title for the HTML report</param>
@@ -66,6 +66,9 @@ namespace AllureReporter
             }
         }
 
+        /// <summary>
+        /// Save a previous report, if found in the output directory, to a new timestamped directory.
+        /// </summary>
         private void SavePreviousReport()
         {
             var prevRepDir = new DirectoryInfo(Path.Combine(_outputDirectory, "allure-report"));
@@ -85,6 +88,11 @@ namespace AllureReporter
 
         }
 
+        /// <summary>
+        /// Copy a source directory and all its contents recursively to a destination directory.
+        /// </summary>
+        /// <param name="sourceDir"></param>
+        /// <param name="destinationDir"></param>
         private void CopyDirectory(DirectoryInfo sourceDir, string destinationDir)
         {
             // Cache directories
@@ -108,7 +116,7 @@ namespace AllureReporter
         }
 
         /// <summary>
-        /// Gets the history files from the previous report and adds them to allure-results/history, so
+        /// Get the history files from the previous report and adds them to allure-results/history, so
         /// they can be included in the next report.
         /// </summary>
         /// <remarks>If pathToReport is not given, searches for a previous report in the outputDirectory</remarks>
@@ -147,7 +155,7 @@ namespace AllureReporter
         }
 
         /// <summary>
-        /// Modifies the summary.json file in the report to show a custom title, default is Allure Report
+        /// Modify the summary.json file in the report to show a custom title, default is Allure Report
         /// </summary>
         /// <param name="title">t</param>
         private void SetReportTitle(string title)
@@ -171,7 +179,7 @@ namespace AllureReporter
         }
 
         /// <summary>
-        /// Includes the environment variables in the report.
+        /// Include the environment variables in the report.
         /// </summary>
         /// <param name="envVars">A dictionary of strings containing key value pairs of environment variables.</param>
         public void AddEnvironmentVariables(IDictionary<string, string> envVars)
