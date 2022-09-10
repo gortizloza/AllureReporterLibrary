@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AllureReporterLibrary.ReportObjects
+﻿namespace AllureReporterLibrary.ReportObjects
 {
     public class ReportSummary
     {

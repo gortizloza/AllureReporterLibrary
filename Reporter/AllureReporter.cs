@@ -25,7 +25,6 @@ namespace AllureReporterLibrary.Reporter
 
         }
 
-
         /// <summary>
         /// Call external command "allure generate".
         /// </summary>
@@ -82,10 +81,7 @@ namespace AllureReporterLibrary.Reporter
                 ? Path.Combine(_outputDirectory, $"allure-report-{prevRepDir.CreationTime:yyyy-MM-dd_HH-mm-ss}")
                 : Path.Combine(_reportsHistoryDir, $"allure-report-{prevRepDir.CreationTime:yyyy-MM-dd_HH-mm-ss}");
 
-
-
             CopyDirectory(prevRepDir, saveReportTo);
-
         }
 
         /// <summary>
@@ -198,7 +194,6 @@ namespace AllureReporterLibrary.Reporter
 
             writer.Close();
         }
-
     }
 }
 
