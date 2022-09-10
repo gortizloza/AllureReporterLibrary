@@ -4,13 +4,23 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Authors>Planit</Authors>
-    <Description>This packages automates the creation of an Allure Report, keeping history information of previous reports to display a trendline in the report summary. It also includes methods to customize some widgets in the report.</Description>
+    <Authors>Gortiz</Authors>
+    <Description>A tool to automate the creation  and customisation of  Allure Reports.</Description>
     <Company />
-    <PackageId>Planit.Utils.AllureReporterLibrary</PackageId>
+    <PackageId>MrG.Utils.AllureReporterLibrary</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageIcon>allureReporterIcon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/gortizloza/AllureReporterLibrary</RepositoryUrl>
+    <PackageTags>allure-report;automation</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Users\gortizloza\OneDrive - Planit Test Management Solutions Pty Ltd\Pictures\Allure Project\allureReporterIcon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
