@@ -6,9 +6,9 @@ namespace AllureReporterLibrary.ReportObjects
     public class EnvVarParam
     {
         [XmlElement(ElementName = "key")]
-        public string Key { get; set; }
+        public string? Key { get; set; }
 
         [XmlElement(ElementName = "value")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 }
