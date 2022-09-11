@@ -10,33 +10,56 @@ namespace AllureReporterLibrary.Reporter
     /// </summary>
     public class Reporter
     {
-        // TODO: Include an option to save allure-reports to output directory instead of overwritting existing report
         private readonly string _outputDirectory;
         private readonly string _pathToResults;
-        private readonly bool _keepReports;
-        private readonly string? _reportsHistoryDir;
+        private readonly bool _keepHistory;
 
-        public Reporter(string outputDirectory, string pathToResults, bool keepReports = false, string? reportsHistoryDir = null)
+        public bool KeepReports { get; set; }
+        public string? ReportsHistoryDir { get; set; }
+        public string? ReportTitle { get; set; }
+        public IDictionary<string, string>? EnvVars { get; set; }
+
+        /// <summary>
+        /// Initialize a new instance of the Reporter class.
+        /// </summary>
+        /// <param name="outputDirectory">The path to the directory to create the allure-report directory.</param>
+        /// <param name="pathToResults">The path to the directory that contains the allure-results directory.</param>
+        /// <param name="keepHistory">Wether to save the previous reports history to create a trendline in the report, default is true.</param>
+        public Reporter(string outputDirectory, string pathToResults, bool keepHistory = true)
         {
             _outputDirectory = outputDirectory;
             _pathToResults = pathToResults;
-            _keepReports = keepReports;
-            _reportsHistoryDir = reportsHistoryDir;
-
+            _keepHistory = keepHistory;
         }
 
         /// <summary>
-        /// Call external command "allure generate".
+        /// Generate a new allure-report.
         /// </summary>
-        /// <remarks>The default report title is Allure Report</remarks>
-        /// <param name="reportTitle">A custom title for the HTML report</param>
-        public void GenerateAllureReport(string? reportTitle = null)
+        public void GenerateAllureReport()
         {
-            if (_keepReports)
+            if (_keepHistory)
+            {
+                AddPreviousHistoryToResults();
+            }
+            if (KeepReports)
             {
                 SavePreviousReport();
             }
+            if (EnvVars != null)
+            {
+                AddEnvironmentVariables();
+            }
 
+            ExecuteAllureCommand();
+
+            if (ReportTitle != null)
+            {
+                SetReportTitle(ReportTitle);
+            }
+        }
+
+        private void ExecuteAllureCommand()
+        {
             string allureCommand = "allure generate";
             string allureOptions = $"-o {_outputDirectory}/allure-report --clean";
 
@@ -58,16 +81,8 @@ namespace AllureReporterLibrary.Reporter
             allureProcess.Start();
             allureProcess.WaitForExit();
             allureProcess.Close();
-
-            if (reportTitle != null)
-            {
-                SetReportTitle(reportTitle);
-            }
         }
 
-        /// <summary>
-        /// Save a previous report, if found in the output directory, to a new timestamped directory.
-        /// </summary>
         private void SavePreviousReport()
         {
             var prevRepDir = new DirectoryInfo(Path.Combine(_outputDirectory, "allure-report"));
@@ -77,18 +92,14 @@ namespace AllureReporterLibrary.Reporter
                 return;
             }
 
-            string saveReportTo = _reportsHistoryDir == null
+            string saveReportTo = ReportsHistoryDir == null
                 ? Path.Combine(_outputDirectory, $"allure-report-{prevRepDir.CreationTime:yyyy-MM-dd_HH-mm-ss}")
-                : Path.Combine(_reportsHistoryDir, $"allure-report-{prevRepDir.CreationTime:yyyy-MM-dd_HH-mm-ss}");
+                : Path.Combine(ReportsHistoryDir, $"allure-report-{prevRepDir.CreationTime:yyyy-MM-dd_HH-mm-ss}");
 
             CopyDirectory(prevRepDir, saveReportTo);
         }
 
-        /// <summary>
-        /// Copy a source directory and all its contents recursively to a destination directory.
-        /// </summary>
-        /// <param name="sourceDir"></param>
-        /// <param name="destinationDir"></param>
+
         private void CopyDirectory(DirectoryInfo sourceDir, string destinationDir)
         {
             // Cache directories
@@ -111,18 +122,9 @@ namespace AllureReporterLibrary.Reporter
             }
         }
 
-        /// <summary>
-        /// Get the history files from the previous report and adds them to allure-results/history, so
-        /// they can be included in the next report.
-        /// </summary>
-        /// <remarks>If pathToReport is not given, searches for a previous report in the outputDirectory</remarks>
-        /// <param name="pathToReport">The path to the previous report.</param>
-        /// <exception cref="IOException"></exception>
-        public void AddPreviousHistoryToResults(string? pathToReport = null)
+        private void AddPreviousHistoryToResults()
         {
-            string pathToPreviousReportHistory = pathToReport == null ?
-                Path.Combine(_outputDirectory, @"allure-report\history") :
-                Path.Combine(pathToReport, "history");
+            string pathToPreviousReportHistory = Path.Combine(_outputDirectory, @"allure-report\history");
             string allureResultsHistoryPath = Path.Combine(_pathToResults, "history");
 
             // if previous report exists
@@ -150,10 +152,6 @@ namespace AllureReporterLibrary.Reporter
             }
         }
 
-        /// <summary>
-        /// Modify the summary.json file in the report to show a custom title, default is Allure Report
-        /// </summary>
-        /// <param name="title">t</param>
         private void SetReportTitle(string title)
         {
             string summaryFilePath = Path.Combine(_outputDirectory, @"allure-report\widgets\summary.json");
@@ -174,15 +172,11 @@ namespace AllureReporterLibrary.Reporter
             }
         }
 
-        /// <summary>
-        /// Include the environment variables in the report.
-        /// </summary>
-        /// <param name="envVars">A dictionary of strings containing key value pairs of environment variables.</param>
-        public void AddEnvironmentVariables(IDictionary<string, string> envVars)
+        private void AddEnvironmentVariables()
         {
             EnvVars reportEnvVars = new EnvVars();
 
-            foreach (KeyValuePair<string, string> param in envVars)
+            foreach (KeyValuePair<string, string> param in EnvVars!)
             {
                 reportEnvVars.Parameters
                     .Add(new EnvVarParam { Key = param.Key, Value = param.Value });
